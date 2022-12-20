@@ -1,5 +1,5 @@
 <script>
-import { toPng, toJpeg, toBlob, toPixelData, toSvg } from 'html-to-image'
+import { toPng } from 'html-to-image'
 export default {
   data() {
     return {
@@ -9,6 +9,20 @@ export default {
       currentImgHeight: 0,
       img: null,
       newImgUrl: null,
+      payload: {
+        imgUrl: null,
+        baseImgUrl: null,
+        imgWidth: null,
+        imgHeight: null,
+        coordinates: [
+          {
+            x: null,
+            y: null,
+            color: null,
+            description: null,
+          },
+        ],
+      },
     }
   },
   methods: {
@@ -52,12 +66,10 @@ export default {
       this.markers.push({
         x: posX,
         y: posY,
-        imgWidth: this.img.clientWidth,
-        imgHeight: this.img.clientHeight,
       })
     },
     async submitPicture() {
-      this.newImgUrl = await toJpeg(document.getElementById('img-area'))
+      this.newImgUrl = await toPng(document.getElementById('img-area'))
     },
   },
   mounted() {
@@ -95,15 +107,12 @@ export default {
               v-for="(marker, index) in markers"
               :key="`${marker.x}-${marker.y}-${index}`"
             >
-              <span
-                :style="`width: ${size}px; height: ${size}px; background: red; position: absolute; top: ${marker.y}px; left: ${marker.x}px; border-radius: ${size}px`"
-              ></span>
-              <span
-                :style="`margin-top: 2px; position: absolute; top: ${
-                  marker.y + size
-                }px; left: ${marker.x}px;`"
-                >{{ index + 1 }}</span
+              <div
+                class="circle"
+                :style="`position: absolute; top: ${marker.y}px; left: ${marker.x}px;`"
               >
+                <strong>{{ index + 1 }}</strong>
+              </div>
             </div>
           </div>
         </b-col>
@@ -122,3 +131,16 @@ export default {
     </b-card>
   </div>
 </template>
+<style scoped>
+.circle {
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  padding: 4px 0 0 0;
+  background: #fff;
+  border: 3px solid #000;
+  color: #000;
+  text-align: center;
+  font: 18px Arial, sans-serif;
+}
+</style>
